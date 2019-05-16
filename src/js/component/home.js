@@ -58,7 +58,9 @@ export class Home extends React.Component {
 						this.generateCss(this.state.coverage);
 					}}>
 					<div className="form-group">
-						<label htmlFor="jsonTextArea">Paste JSON content</label>
+						<label htmlFor="jsonTextArea">
+							1. Paste JSON content
+						</label>
 						<textarea
 							className="form-control"
 							id="jsonTextArea"
@@ -67,9 +69,10 @@ export class Home extends React.Component {
 							onChange={e =>
 								this.setState({ coverage: e.target.value })
 							}
+							placeholder="Paste JSON content here"
 						/>
 					</div>
-					<button className="btn btn-info">Extract CSS</button>
+					<button className="btn btn-info">2. Extract CSS</button>
 				</form>
 				<hr />
 				<br />
