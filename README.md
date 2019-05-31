@@ -8,3 +8,5 @@ Generate a Coverage report:
 - Export
 - Copy the content of the JSON file and paste in step 1.
 - Click 2. Extract and done.
+
+Live site: https://nachovz.github.io/devtools-coverage-css-generator/ 
