@@ -31,10 +31,17 @@ export class Home extends React.Component {
 					`Total Bytes for ${entry.url}: ${entry.text.length}`
 				);
 				for (const range of entry.ranges) {
-					css_used_bytes += range.end - range.start - 1;
-					covered_css += entry.text.slice(range.start, range.end);
+					let start = range.start;
+					let end = range.end;
+					if (entry.text[range.start - 1] === "{") {
+						// look for previous @media index
+						start = entry.text.lastIndexOf("@media", start);
+						end++;
+					}
+					css_used_bytes += end - start - 1;
+					covered_css += entry.text.slice(start, end);
 					uncovered_css = uncovered_css.replace(
-						entry.text.slice(range.start, range.end),
+						entry.text.slice(start, end),
 						""
 					);
 				}
