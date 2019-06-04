@@ -31,19 +31,31 @@ export class Home extends React.Component {
 					`Total Bytes for ${entry.url}: ${entry.text.length}`
 				);
 				for (const range of entry.ranges) {
-					let start = range.start;
-					let end = range.end;
-					if (entry.text[range.start - 1] === "{") {
-						// look for previous @media index
-						start = entry.text.lastIndexOf("@media", start);
-						end++;
+					// Fix indices due @media not being exported, see https://crbug.com/765088
+					let mediaString = "";
+					let mediaStart = entry.text.lastIndexOf("@media", range.start);
+					if (mediaStart !== -1) {
+						let mediaEnd = entry.text.indexOf("{", mediaStart);
+						if (mediaEnd !== -1) {
+							// Yeah, we found a previous @media rule
+							if (!entry.text.slice(mediaStart, range.start).includes("}}")) {
+								// ... but ensure it is not from another selector block, e.g
+								// @media (min-width: 1200px) {
+								//   .container {         <- might be from another range or not
+								//     max-width:1140px
+								//   }
+								// }                      <- glad we have double closing }} here
+								mediaString = entry.text.slice(mediaStart, mediaEnd);
+							}
+						}
 					}
-					css_used_bytes += end - start - 1;
-					covered_css += entry.text.slice(start, end);
-					uncovered_css = uncovered_css.replace(
-						entry.text.slice(start, end),
-						""
-					);
+					css_used_bytes += range.end - range.start - 1 + mediaString.length;
+					covered_css += mediaString + entry.text.slice(range.start, range.end);
+					if (mediaString) {
+						// Don't forget the closing bracket
+						covered_css += "}";
+					}
+					uncovered_css = uncovered_css.replace(entry.text.slice(range.start, range.end), "");
 				}
 			}
 		}
